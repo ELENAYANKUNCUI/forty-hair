@@ -1,0 +1,18 @@
+{
+  "name": "forty-hair",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A canvas merge game with a real-time Cloudflare D1 leaderboard.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "check": "node --check public/app.js && node --check public/music.js",
+    "deploy": "wrangler pages deploy public --project-name=forty-hair --branch=main"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

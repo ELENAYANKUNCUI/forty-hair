@@ -1,0 +1,8 @@
+name = "forty-hair"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-10-21"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "forty-hair-leaderboard"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

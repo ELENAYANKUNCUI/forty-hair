@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f1729">
+<title>四十而发 · 长发国王的加冕礼</title>
+<meta name="description" content="2026.10.27 生日限定。帮长发国王把发量养到 40，顺便把财运装满。">
+<link rel="icon" href="./assets/king-medallion.png" type="image/png">
+<link rel="apple-touch-icon" href="./assets/king-medallion.png">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <div class="brand">
+      <span class="brand-seal" id="brandSeal" role="button" tabindex="0" title="戳一下国王" aria-label="戳一下国王">40</span>
+      <div class="brand-text">
+        <h1>四十而发</h1>
+        <p>长发国王的加冕礼</p>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="wealth"><span>财运</span><b id="score">0</b></div>
+      <button type="button" id="boardBtn" class="icon-btn" aria-label="打开功臣榜">榜</button>
+      <button type="button" id="music" class="icon-btn" aria-label="关闭音乐" aria-pressed="true">乐</button>
+      <button type="button" id="mute" class="icon-btn" aria-label="关闭音效" aria-pressed="true">效</button>
+    </div>
+  </header>
+
+  <div id="hairRow">
+    <div class="hair-label"><span>发量</span><b id="hairText">0/40</b></div>
+    <div id="hairTrack" aria-label="发量进度">
+      <i id="hairFill"></i>
+      <span id="hairTicks" aria-hidden="true"></span>
+    </div>
+    <div id="nextBox" role="button" tabindex="0" title="查看发量图鉴" aria-label="查看发量图鉴" aria-haspopup="dialog">
+      <span>下一发</span>
+      <canvas id="nextCv"></canvas>
+    </div>
+  </div>
+
+  <main id="stage" aria-label="长发国王合成游戏">
+    <canvas id="cv"></canvas>
+    <div id="hint">按住左右滑动 · 松手掉落</div>
+    <div id="dangerTag">王冠线</div>
+    <div id="comboBadge" class="combo-badge hidden" aria-live="polite"><span>财运连击</span><b id="comboText">x2</b></div>
+    <div id="kingQuip" class="king-quip hidden" role="status" aria-live="polite"><img src="./assets/king-medallion.png" alt=""><span id="kingQuipText"></span></div>
+  </main>
+
+  <footer id="footer">
+    <span id="hudPlayer">长发骑士</span>
+    <span class="footer-dot">·</span>
+    <span id="modeLabel">单机模式</span>
+    <span class="footer-dot">·</span>
+    <span>2026.10.27</span>
+  </footer>
+</div>
+
+<!-- 开场 -->
+<section id="intro" class="full-overlay intro">
+  <div class="intro-glow"></div>
+  <div class="intro-content">
+    <p class="eyebrow">2026.10.27 · 40 岁生日限定</p>
+    <div class="intro-title-wrap">
+      <span class="intro-seal">四十</span>
+      <h2>四十而发</h2>
+      <p class="intro-sub">长发国王的加冕礼</p>
+    </div>
+    <p class="intro-copy">国王四十，王冠很稳，<br>发量正在赶来的路上。</p>
+    <p class="intro-copy small">帮他把发量养到 40，顺便把财运装满。</p>
+    <div class="name-row">
+      <label for="playerName">你的名字</label>
+      <input id="playerName" maxlength="8" autocomplete="off" placeholder="长发骑士">
+    </div>
+    <button type="button" id="startBtn" class="gold-btn big">开始加冕</button>
+    <div class="intro-links">
+      <button type="button" id="rulesBtn" class="text-btn">怎么玩</button>
+      <span>·</span>
+      <button type="button" id="chainBtn" class="text-btn">发量图鉴</button>
+      <span>·</span>
+      <button type="button" id="introBoardBtn" class="text-btn">加冕功臣榜</button>
+    </div>
+    <p class="intro-final">新的一岁，又发又发。</p>
+  </div>
+</section>
+
+<!-- 规则 -->
+<section id="rules" class="full-overlay hidden">
+  <div class="modal parchment rules-card">
+    <p class="modal-kicker">加冕指南</p>
+    <h2>怎么帮国王长头发</h2>
+    <ol class="rules-list">
+      <li><b>左右拖动</b>，松手掉落发卷。</li>
+      <li>两个<b>相同发量</b>碰在一起，合成下一级。</li>
+      <li>每次合成都会涨<b>财运</b>；连续合成有额外发量，连击 4 次掉红包。</li>
+      <li>发量到 <b>40</b>，国王加冕；堆过<b>王冠线</b>，头发就淹了王冠。</li>
+      <li>发量 10 / 20 / 30 时，会解锁一条损友证词。</li>
+    </ol>
+    <button type="button" id="rulesChainBtn" class="text-btn rules-chain-btn">查看发量图鉴 →</button>
+    <button type="button" id="rulesClose" class="gold-btn">知道了</button>
+  </div>
+</section>
+
+<!-- 发量图鉴 -->
+<section id="chainOverlay" class="full-overlay hidden">
+  <div class="modal parchment chain-card">
+    <p class="modal-kicker">发量图鉴</p>
+    <h2>两个同级，合成下一级</h2>
+    <p class="chain-note">发量越大，棋子越大。点“下一发”预览也能打开这里。</p>
+    <div id="chainGrid" class="chain-grid"></div>
+    <p class="chain-tip">每连续合成 4 次，触发一次红包暴击。</p>
+    <button type="button" id="chainClose" class="gold-btn">知道了</button>
+  </div>
+</section>
+
+<!-- 发量档案 -->
+<section id="docOverlay" class="full-overlay hidden">
+  <div class="modal parchment doc-card">
+    <div class="doc-stamp">发量档案</div>
+    <p id="docIndex" class="modal-kicker">档案 01 / 04</p>
+    <div id="docYear" class="doc-year">2016</div>
+    <blockquote id="docText">他说只是最近掉得多。</blockquote>
+    <p id="docSign" class="doc-sign">—— 老周</p>
+    <div class="wax-seal">发</div>
+    <button type="button" id="docClose" class="gold-btn">继续加冕</button>
+  </div>
+</section>
+
+<!-- 失败 -->
+<section id="overOverlay" class="full-overlay hidden">
+  <div class="modal parchment over-card">
+    <p class="modal-kicker">加冕中断</p>
+    <h2>王冠线告急</h2>
+    <p class="over-copy">头发把王冠淹了。<br>国王说：先整理一下，再来一次。</p>
+    <div class="result-grid">
+      <div><span>财运</span><b id="overScore">0</b></div>
+      <div><span>发量</span><b id="overHair">0/40</b></div>
+      <div><span>称号</span><b id="overTitle">加冕功臣</b></div>
+      <div><span>排名</span><b id="overRank">—</b></div>
+    </div>
+    <button type="button" id="retryBtn" class="gold-btn">再来一局</button>
+    <div class="btn-row">
+      <button type="button" id="switchBtn" class="ghost-btn">换人</button>
+      <button type="button" id="overBoardBtn" class="ghost-btn">看功臣榜</button>
+    </div>
+  </div>
+</section>
+
+<!-- 胜利 -->
+<section id="winOverlay" class="full-overlay hidden">
+  <div class="modal parchment win-card">
+    <p class="modal-kicker">2026.10.27 · 加冕礼成</p>
+    <h2>加冕成功</h2>
+    <div class="medallion-wrap">
+      <img src="./assets/king-medallion.png" alt="长发国王徽章" class="medallion">
+    </div>
+    <p class="win-name"><span id="winName">长发骑士</span>，你为国王续上了发量。</p>
+    <div class="result-grid win-grid">
+      <div><span>发量</span><b>40/40</b></div>
+      <div><span>财运</span><b id="winScore">0</b></div>
+      <div><span>称号</span><b id="winTitle">首席生发官</b></div>
+      <div><span>排名</span><b id="winRank">—</b></div>
+    </div>
+    <div class="archive-mini">
+      <p class="archive-mini-title">国王档案 · 已集齐</p>
+      <div id="winDocs"></div>
+    </div>
+    <p class="win-final">新的一岁，又发又发。</p>
+    <button type="button" id="revealGiftBtn" class="gold-btn">揭晓生日礼物</button>
+    <div id="giftCard" class="gift-card hidden">
+      <img src="./assets/pillow.jpg" alt="长发国王抱枕" class="gift-img">
+      <p class="gift-kicker">真正的加冕礼物</p>
+      <h3>长发国王抱枕</h3>
+      <p class="gift-copy">发量已经实体化。抱一下，分你一点财运。</p>
+    </div>
+    <div class="btn-row">
+      <button type="button" id="winRetryBtn" class="ghost-btn">再来一局</button>
+      <button type="button" id="winSwitchBtn" class="ghost-btn">换人</button>
+      <button type="button" id="winBoardBtn" class="ghost-btn">功臣榜</button>
+    </div>
+  </div>
+</section>
+
+<!-- 排行榜 -->
+<section id="boardOverlay" class="full-overlay hidden">
+  <div class="modal parchment board-card">
+    <p class="modal-kicker">加冕功臣榜</p>
+    <h2>谁最会帮国王长头发</h2>
+    <p id="boardMeta" class="board-meta" aria-live="polite">全服实时榜</p>
+    <div class="name-edit">
+      <input id="boardNick" maxlength="8" autocomplete="off" placeholder="你的名字">
+      <button type="button" id="saveNick">改昵称</button>
+    </div>
+    <div id="boardList" class="board-list"></div>
+    <button type="button" id="boardClose" class="gold-btn">关闭</button>
+  </div>
+</section>
+
+<script src="./music.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
