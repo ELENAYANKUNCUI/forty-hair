@@ -91,6 +91,12 @@ If you only want to preview the static game without the leaderboard, serve the `
    npm run deploy
    ```
 
+   If your Wrangler version delegates `pages project create` to Workers and reports that it cannot detect static files, add `--force` once:
+
+   ```bash
+   npx wrangler pages project create forty-hair --production-branch=main --force
+   ```
+
    The deploy command uploads `public/` and bundles the Pages Function. The D1 binding is read from `wrangler.toml`.
 
 5. Open the production URL shown by Wrangler (`https://<project>.pages.dev`).
